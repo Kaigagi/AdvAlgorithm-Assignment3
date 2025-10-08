@@ -37,7 +37,7 @@ public:
 class FlowGraph
 {
 public:
-    vector<vector<Vertex*>> adjacencyList;
+    vector<vector<Edge*>> adjacencyList;
     FlowGraph(/* args */);
     ~FlowGraph();
     void AddEdge(Edge* edge);

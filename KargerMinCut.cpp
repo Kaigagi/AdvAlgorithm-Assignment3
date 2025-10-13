@@ -55,6 +55,8 @@ int KargerLoop(FlowGraph& graph){
             }
         }
     }
+
+    delete(uf);
     
     return cutCapacity;
 }

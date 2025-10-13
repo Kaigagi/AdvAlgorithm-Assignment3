@@ -37,3 +37,18 @@ vector<Edge*> FlowGraph::GetAllEdge()
 
     return allEdges;
 }
+
+void FlowGraph::AddEdge(int from, int to, int capacity)
+{
+    // Create forward and backward edges
+    Edge* forward = new Edge(from, to, capacity, 0); 
+    Edge* backward = new Edge(to, from, 0, 0);       
+
+    // Link the edges
+    forward->reversedEdge = backward;
+    backward->reversedEdge = forward;
+
+    // Add them to the adjacency list
+    adjacencyList[from].push_back(forward);
+    adjacencyList[to].push_back(backward);
+}

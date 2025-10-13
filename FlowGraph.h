@@ -22,7 +22,7 @@ public:
     vector<vector<Edge*>> adjacencyList;
     FlowGraph(int vertexCount);
     ~FlowGraph();
-    void AddEdge(Edge* edge);
+    void AddEdge(int from, int to, int capacity);
     int GetEdgeCount();
     vector<Edge*> GetAllEdge();
 };

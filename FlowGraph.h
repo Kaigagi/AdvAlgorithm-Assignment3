@@ -24,5 +24,6 @@ public:
     ~FlowGraph();
     void AddEdge(Edge* edge);
     int GetEdgeCount();
+    vector<Edge*> GetAllEdge();
 };
 

@@ -25,11 +25,11 @@ int KargerLoop(FlowGraph& graph){
     int currentVertices = graph.adjacencyList.size();
     UnionFind* uf = new UnionFind(currentVertices);
 
-    vector<Edge*> edgeList
+    vector<Edge*> edgeList = graph.GetAllEdge();
     
     while (currentVertices > 2)
     {
-        int random
+        Edge* chosenEdge = GetRandomEdgeOnce(edgeList);
     }
     
 }

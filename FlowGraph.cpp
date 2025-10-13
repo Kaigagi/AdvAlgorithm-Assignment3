@@ -1,6 +1,6 @@
 #include "FlowGraph.h"
 
-Edge::Edge(Vertex* from, Vertex* to, int capacity, int flow)
+Edge::Edge(int from, int to, int capacity, int flow)
 {
 }
 
@@ -8,6 +8,15 @@ Edge::~Edge()
 {
 }
 
-void FlowGraph::MergeEdge(Edge* edge){
-    
+FlowGraph::FlowGraph(int vertexCount)
+{
+    adjacencyList.resize(vertexCount);
+}
+
+int FlowGraph::GetEdgeCount()
+{
+    int count = 0;
+    for (const auto& edges : adjacencyList)
+        count += static_cast<int>(edges.size());
+    return count;
 }

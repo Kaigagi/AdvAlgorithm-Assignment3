@@ -2,35 +2,17 @@
 
 using namespace std;
 
-
-class Vertex
-{
-public:
-    int index;
-    Vertex(/* args */);
-    ~Vertex();
-};
-
-Vertex::Vertex(/* args */)
-{
-}
-
-Vertex::~Vertex()
-{
-}
-
-
 class Edge
 {
 private:
     /* data */
 public:
-    Vertex* from;
-    Vertex* to;
+    int from;
+    int to;
     int capacity;
     int flow;
     Edge* reversedEdge;
-    Edge(Vertex* from, Vertex* to, int capacity, int flow);
+    Edge(int from, int to, int capacity, int flow);
     ~Edge();
 };
 
@@ -38,17 +20,9 @@ class FlowGraph
 {
 public:
     vector<vector<Edge*>> adjacencyList;
-    FlowGraph(/* args */);
+    FlowGraph(int vertexCount);
     ~FlowGraph();
     void AddEdge(Edge* edge);
-    void MergeEdge(Edge* edge);
+    int GetEdgeCount();
 };
-
-FlowGraph::FlowGraph(/* args */)
-{
-}
-
-FlowGraph::~FlowGraph()
-{
-}
 

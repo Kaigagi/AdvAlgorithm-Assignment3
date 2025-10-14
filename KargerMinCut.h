@@ -1,3 +1,4 @@
+#pragma once
 #include "FlowGraph.h"
 #include "UnionFind.h"
 #include <random>

@@ -13,6 +13,10 @@ FlowGraph::FlowGraph(int vertexCount)
     adjacencyList.resize(vertexCount);
 }
 
+FlowGraph::~FlowGraph()
+{
+}
+
 int FlowGraph::GetEdgeCount()
 {
     int count = 0;

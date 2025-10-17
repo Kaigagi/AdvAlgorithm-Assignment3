@@ -2,6 +2,10 @@
 
 Edge::Edge(int from, int to, int capacity, int flow)
 {
+    this->from = from;
+    this->to = to;
+    this->capacity = capacity;
+    this->flow = flow;
 }
 
 Edge::~Edge()

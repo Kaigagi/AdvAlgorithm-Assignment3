@@ -20,43 +20,73 @@ Edge* GetRandomEdgeOnce(vector<Edge*>& allEdges)
 }
 
 //return the cut flow capacity
-int KargerLoop(FlowGraph& graph){
-    //The amount of vertices is the graph vertices at beginning
+int KargerSTMinCut(FlowGraph& graph, int s, int t) {
     int currentVertices = graph.adjacencyList.size();
     UnionFind* uf = new UnionFind(currentVertices);
 
     vector<Edge*> edgeList = graph.GetAllEdge();
-    
-    while (currentVertices > 2)
+
+    if (currentVertices <= 1)
     {
+        return 0;
+    }
+
+    // If there is only one edge in the graph, return its capacity
+    vector<Edge*> edges = graph.GetAllEdge();
+    if (edges.size() == 1){
+        return edges[0]->capacity;
+    }
+
+    while (true) {
+        // Stop when s and t are in different groups AND 
+        // there are only two distinct supernodes left
+        int sRoot = uf->Find(s);
+        int tRoot = uf->Find(t);
+        if (sRoot != tRoot && currentVertices <= 2) break;
+
+        if (edgeList.empty()) break;
+
         Edge* chosenEdge = GetRandomEdgeOnce(edgeList);
+        if (!chosenEdge) break;
 
         int fromRoot = uf->Find(chosenEdge->from);
         int toRoot = uf->Find(chosenEdge->to);
 
-        if (fromRoot != toRoot)
-        {
+        // Skip if it merges s and t into the same supernode
+        if ((fromRoot == uf->Find(s) && toRoot == uf->Find(t)) ||
+            (fromRoot == uf->Find(t) && toRoot == uf->Find(s))) {
+            continue;
+        }
+
+        // Contract the edge
+        if (fromRoot != toRoot) {
             uf->Union(chosenEdge->from, chosenEdge->to);
             currentVertices--;
         }
+
+        // Stop when only two groups remain and s,t are separate
+        sRoot = uf->Find(s);
+        tRoot = uf->Find(t);
+        if (sRoot != tRoot && currentVertices <= 2) break;
     }
 
-    //count cut capacity
+    // Count capacity of edges that connect s-supernode and t-supernode
     int cutCapacity = 0;
-    for(vector<Edge*> vertex : graph.adjacencyList){
-        for (Edge* edge : vertex)
-        {
+    int sRoot = uf->Find(s);
+    int tRoot = uf->Find(t);
+
+    for (const auto& vertexEdges : graph.adjacencyList) {
+        for (Edge* edge : vertexEdges) {
             int fromRoot = uf->Find(edge->from);
             int toRoot = uf->Find(edge->to);
 
-            if (fromRoot != toRoot)
-            {
+            if ((fromRoot == sRoot && toRoot == tRoot) ||
+                (fromRoot == tRoot && toRoot == sRoot)) {
                 cutCapacity += edge->capacity;
             }
         }
     }
 
-    delete(uf);
-    
+    delete uf;
     return cutCapacity;
 }

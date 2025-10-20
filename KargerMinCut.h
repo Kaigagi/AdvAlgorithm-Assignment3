@@ -4,6 +4,4 @@
 #include <random>
 
 //Return the max flow
-int KargerMaxFlow(FlowGraph& graph);
-
-int KargerLoop(FlowGraph& graph);
+int KargerSTMinCut(FlowGraph& graph, int s, int t);

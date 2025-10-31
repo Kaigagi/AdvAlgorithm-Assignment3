@@ -25,15 +25,22 @@ int RunKargerMultipleTimes(FlowGraph baseGraph, int s, int t)
 {
     int n = baseGraph.adjacencyList.size();
     int runs = 5 * n * (n - 1);
+    // used for debug
+    // int runs = 1; 
 
-    int maxFlow = INT_MIN;
+    int maxFlow = INT_MAX;
 
+    if (runs == 0)
+    {
+        return 0;
+    }
+    
     for (int i = 0; i < runs; ++i)
     {
         FlowGraph gCopy = baseGraph;
         int cut = KargerSTMinCut(gCopy, s, t);
 
-        if (cut > maxFlow)
+        if (cut < maxFlow)
             maxFlow = cut;
     }
 

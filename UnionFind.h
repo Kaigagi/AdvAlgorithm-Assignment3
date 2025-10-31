@@ -19,6 +19,7 @@ public:
     int Find(int i);
 
     bool Union(int i, int j);
+    void Print() const;
 };
 
 

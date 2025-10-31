@@ -12,8 +12,6 @@ UnionFind::UnionFind(int size)
 
     // Initialize rankList: all ranks are 0 initially
     rankList.resize(size, 0);
-
-    std::cout << "UnionFind structure initialized for " << size << " elements." << std::endl;
 }
 
 int UnionFind::Find(int i)
@@ -60,4 +58,25 @@ bool UnionFind::Union(int i, int j)
     }
 
     return true;
+}
+
+void UnionFind::Print() const
+{
+    std::cout << "Union-Find Structure:\n";
+
+    for (int i = 0; i < parentList.size(); ++i)
+    {
+        // Find root without modifying structure (const)
+        int root = i;
+        while (root != parentList[root])
+            root = parentList[root];
+
+        std::cout << "Element " << i
+                  << " | Parent = " << parentList[i]
+                  << " | Root = " << root
+                  << " | Rank = " << rankList[i]
+                  << "\n";
+    }
+
+    std::cout << std::endl;
 }

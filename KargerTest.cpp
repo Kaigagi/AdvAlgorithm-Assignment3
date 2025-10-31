@@ -1,5 +1,8 @@
 #include "KargerTest.h"
 
+// -------------------------------
+// Helper test graph
+// -------------------------------
 FlowGraph BuildTestGraph()
 {
     // Node 0 = source (s)
@@ -15,60 +18,61 @@ FlowGraph BuildTestGraph()
     return graph;
 }
 
-// Run Karger 5 * n * (n-1) times for more reliability
+// -------------------------------
+// Run Karger Many Times → Max Flow
+// -------------------------------
 int RunKargerMultipleTimes(FlowGraph baseGraph, int s, int t)
 {
     int n = baseGraph.adjacencyList.size();
     int runs = 5 * n * (n - 1);
 
-    int minCut = INT_MAX;
+    int maxFlow = INT_MIN;
 
     for (int i = 0; i < runs; ++i)
     {
-        FlowGraph gCopy = baseGraph; // fresh copy
+        FlowGraph gCopy = baseGraph;
         int cut = KargerSTMinCut(gCopy, s, t);
-        if (cut < minCut) minCut = cut;
+
+        if (cut > maxFlow)
+            maxFlow = cut;
     }
 
-    return minCut;
+    return maxFlow;
 }
 
-// Test that KargerLoop returns a valid min cut when s=0 and t=3
-TEST(KargerMinCutTest, SimpleGraphWithSourceSink)
+// -------------------------------
+// ✅ MAX FLOW TESTS
+// -------------------------------
+
+// Max flow in this graph = 2
+TEST(KargerMaxFlowTest, SimpleGraph)
 {
     FlowGraph graph = BuildTestGraph();
-
-    // Karger is probabilistic, so run multiple times to reduce chance of bad luck
-    int minCut = INT_MAX;
-    for (int i = 0; i < 100; ++i)
-    {
-        FlowGraph gCopy = BuildTestGraph();  // Rebuild for fresh random edges
-        int cut = KargerSTMinCut(gCopy, 0, 3);   // Explicitly use source=s=0, sink=t=3
-        if (cut < minCut) minCut = cut;
-    }
-
-    // The min cut between s=0 and t=3 in this graph is 2
-    EXPECT_EQ(minCut, 2);
+    int maxFlow = RunKargerMultipleTimes(graph, 0, 3);
+    cout<<"max flow: "<<maxFlow;
+    EXPECT_EQ(maxFlow, 2);
 }
 
-// Test when graph is empty (no vertices)
-TEST(KargerMinCutTest, EmptyGraph)
+// Empty graph → max flow = 0
+TEST(KargerMaxFlowTest, EmptyGraph)
 {
     FlowGraph graph(0);
-    int cut = KargerSTMinCut(graph, 0, 0);
-    EXPECT_EQ(cut, 0);
+    int maxFlow = RunKargerMultipleTimes(graph, 0, 0);
+    cout<<"max flow: "<<maxFlow;
+    EXPECT_EQ(maxFlow, 0);
 }
 
-// Test when graph has a single edge (s=0, t=1)
-TEST(KargerMinCutTest, SingleEdge)
+// Single edge graph → max flow = capacity
+TEST(KargerMaxFlowTest, SingleEdge)
 {
     FlowGraph graph(2);
     graph.AddEdge(0, 1, 5);
 
-    int cut = KargerSTMinCut(graph, 0, 1);
-    EXPECT_EQ(cut, 5);
+    int maxFlow = RunKargerMultipleTimes(graph, 0, 1);
+    EXPECT_EQ(maxFlow, 5);
 }
 
+// Diamond graph → max flow = 2
 TEST(KargerMaxFlowTest, DiamondGraph)
 {
     FlowGraph graph(4);
@@ -82,17 +86,19 @@ TEST(KargerMaxFlowTest, DiamondGraph)
     EXPECT_EQ(maxFlow, 2);
 }
 
+// Parallel edges → max flow = sum of capacities
 TEST(KargerMaxFlowTest, ParallelEdges)
 {
     FlowGraph graph(2);
 
     graph.AddEdge(0, 1, 2);
-    graph.AddEdge(0, 1, 3); // parallel edge
+    graph.AddEdge(0, 1, 3);
 
     int maxFlow = RunKargerMultipleTimes(graph, 0, 1);
     EXPECT_EQ(maxFlow, 5);
 }
 
+// Complete graph K5 with unit capacities → max flow = degree(s) = 4
 TEST(KargerMaxFlowTest, CompleteGraph5)
 {
     const int n = 5;
@@ -103,26 +109,27 @@ TEST(KargerMaxFlowTest, CompleteGraph5)
             graph.AddEdge(i, j, 1);
 
     int maxFlow = RunKargerMultipleTimes(graph, 0, 4);
+    cout<<"max flow: "<<maxFlow;
     EXPECT_EQ(maxFlow, 4);
 }
 
+// Two strong clusters but only 1-capacity bridge → max flow = 1
 TEST(KargerMaxFlowTest, TwoClustersWeakBridge)
 {
     FlowGraph graph(6);
 
-    // Left cluster (strong)
+    // Left cluster
     graph.AddEdge(0, 1, 5);
     graph.AddEdge(1, 2, 5);
 
-    // Right cluster (strong)
+    // Right cluster
     graph.AddEdge(3, 4, 5);
     graph.AddEdge(4, 5, 5);
 
-    // Weak connection
+    // Weak 1-capacity connection
     graph.AddEdge(2, 3, 1);
 
     int maxFlow = RunKargerMultipleTimes(graph, 0, 5);
+    cout<<"max flow: "<<maxFlow;
     EXPECT_EQ(maxFlow, 1);
 }
-
-

@@ -2,3 +2,8 @@
 *.pdb
 *.exe
 *.ilk
+
+# Build folders
+build/**
+CMakeLists.txt
+.vscode/

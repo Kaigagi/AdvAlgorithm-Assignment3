@@ -5,9 +5,11 @@
 
 static bool bfs_find_augmenting_path(FlowGraph& graph, int source, int sink, std::vector<Edge*>& parent) {
     std::fill(parent.begin(), parent.end(), nullptr);
+    std::vector<bool> visited(graph.adjacencyList.size(), false);
     std::queue<int> q;
+
     q.push(source);
-    parent[source] = reinterpret_cast<Edge*>(-1); // Mark source as visited
+    visited[source] = true;
 
     while (!q.empty()) {
         int u = q.front();
@@ -15,20 +17,17 @@ static bool bfs_find_augmenting_path(FlowGraph& graph, int source, int sink, std
 
         for (Edge* edge : graph.adjacencyList[u]) {
             int v = edge->to;
-
-            // If not yet visited and residual capacity exists
             int residual = edge->capacity - edge->flow;
-            if (parent[v] == nullptr && residual > 0) {
 
+            if (!visited[v] && residual > 0) {
                 parent[v] = edge;
-                if (v == sink) {
-                    return true; // Found path to sink
-                }
+                visited[v] = true;
+                if (v == sink) return true;
                 q.push(v);
             }
         }
     }
-    return false; // No augmenting path found
+    return false;
 }
 
 int EdmondsKarpMaxFlow(FlowGraph& graph, int source, int sink) {
@@ -45,14 +44,12 @@ int EdmondsKarpMaxFlow(FlowGraph& graph, int source, int sink) {
         int bottleneck = INT_MAX;
         int v = sink;
 
-        // Trace back to find bottleneck capacity
         while (v != source) {
             Edge* edge = parent[v];
             bottleneck = std::min(bottleneck, edge->capacity - edge->flow);
             v = edge->from;
         }
 
-        // Augment flow along the path
         v = sink;
         while (v != source) {
             Edge* edge = parent[v];
@@ -61,7 +58,6 @@ int EdmondsKarpMaxFlow(FlowGraph& graph, int source, int sink) {
             v = edge->from;
         }
 
-        // Add to total flow
         maxFlow += bottleneck;
     }
 

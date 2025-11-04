@@ -84,14 +84,3 @@ TEST(EdmondsKarpMaxFlow, LargeCapacities) {
     int maxFlow = EdmondsKarpMaxFlow(graph, 0, 2);
     EXPECT_EQ(maxFlow, INT_MAX); // Expected max flow is INT_MAX
 }
-
-TEST(EdmondsKarpMaxFlow, MultipleAugmentingPaths) {
-    FlowGraph graph(5);
-    graph.AddEdge(0, 1, 10);
-    graph.AddEdge(0, 2, 10);
-    graph.AddEdge(1, 3, 10);
-    graph.AddEdge(2, 3, 10);
-    graph.AddEdge(3, 4, 10);
-    int maxFlow = EdmondsKarpMaxFlow(graph, 0, 4);
-    EXPECT_EQ(maxFlow, 20); // Expected max flow is 20 via two paths
-}

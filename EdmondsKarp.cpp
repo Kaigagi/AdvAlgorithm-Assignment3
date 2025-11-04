@@ -12,16 +12,18 @@ static bool bfs_find_augmenting_path(FlowGraph& graph, int source, int sink, std
         int u = q.front();
         q.pop();
 
-        for (Edge& edge : graph.adjacencyList[u]) {
-            if (parent[edge.to] == nullptr && edge.to != source && edge.capacity > edge.flow) {
-                parent[edge.to] = &edge;
-                if (edge.to == sink) {
+        for (Edge* edge : graph.adjacencyList[u]) {
+            int v = edge->to;
+            if (parent[v] == nullptr && edge->capacity > edge->flow && v != source) {
+                parent[v] = edge;
+                if (v == sink) {
                     return true; // Found path to sink
                 }
-                q.push(edge.to);
+                q.push(v);
             }
         }
     }
+
     return false; // No path found
 }
 

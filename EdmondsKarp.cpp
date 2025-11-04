@@ -7,6 +7,7 @@ static bool bfs_find_augmenting_path(FlowGraph& graph, int source, int sink, std
     std::fill(parent.begin(), parent.end(), nullptr);
     std::queue<int> q;
     q.push(source);
+    parent[source] = reinterpret_cast<Edge*>(-1); // Mark source as visited
 
     while (!q.empty()) {
         int u = q.front();
@@ -14,7 +15,9 @@ static bool bfs_find_augmenting_path(FlowGraph& graph, int source, int sink, std
 
         for (Edge* edge : graph.adjacencyList[u]) {
             int v = edge->to;
-            if (parent[v] == nullptr && edge->capacity > edge->flow && v != source) {
+
+            // If not yet visited and residual capacity exists
+            if (parent[v] == nullptr && edge->capacity > edge->flow) {
                 parent[v] = edge;
                 if (v == sink) {
                     return true; // Found path to sink
@@ -23,12 +26,13 @@ static bool bfs_find_augmenting_path(FlowGraph& graph, int source, int sink, std
             }
         }
     }
-
-    return false; // No path found
+    return false; // No augmenting path found
 }
 
 int EdmondsKarpMaxFlow(FlowGraph& graph, int source, int sink) {
-    if (source < 0 || sink < 0 || source >= static_cast<int>(graph.adjacencyList.size()) || sink >= static_cast<int>(graph.adjacencyList.size())) {
+    if (source < 0 || sink < 0 ||
+        source >= static_cast<int>(graph.adjacencyList.size()) ||
+        sink >= static_cast<int>(graph.adjacencyList.size())) {
         throw std::out_of_range("Source or sink vertex index out of bounds.");
     }
 
@@ -36,30 +40,28 @@ int EdmondsKarpMaxFlow(FlowGraph& graph, int source, int sink) {
     std::vector<Edge*> parent(graph.adjacencyList.size(), nullptr);
 
     while (bfs_find_augmenting_path(graph, source, sink, parent)) {
-        int bottlenexkt = INT_MAX;
+        int bottleneck = INT_MAX;
         int v = sink;
 
+        // Trace back to find bottleneck capacity
         while (v != source) {
             Edge* edge = parent[v];
-            bottlenexkt = std::min(bottlenexkt, edge->capacity - edge->flow);
+            bottleneck = std::min(bottleneck, edge->capacity - edge->flow);
             v = edge->from;
         }
 
-        if (bottlenexkt == 0 || bottlenexkt == INT_MAX) {
-            break; // No more augmenting path
-        }
-
+        // Augment flow along the path
         v = sink;
         while (v != source) {
             Edge* edge = parent[v];
-            edge->flow += bottlenexkt;
-            edge->reversedEdge->flow -= bottlenexkt;
+            edge->flow += bottleneck;
+            edge->reversedEdge->flow -= bottleneck;
             v = edge->from;
         }
 
-        maxFlow += bottlenexkt;
+        // Add to total flow
+        maxFlow += bottleneck;
     }
 
     return maxFlow;
-
 }

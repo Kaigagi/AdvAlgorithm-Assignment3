@@ -17,7 +17,9 @@ static bool bfs_find_augmenting_path(FlowGraph& graph, int source, int sink, std
             int v = edge->to;
 
             // If not yet visited and residual capacity exists
-            if (parent[v] == nullptr && edge->capacity > edge->flow) {
+            int residual = edge->capacity - edge->flow;
+            if (parent[v] == nullptr && residual > 0) {
+
                 parent[v] = edge;
                 if (v == sink) {
                     return true; // Found path to sink

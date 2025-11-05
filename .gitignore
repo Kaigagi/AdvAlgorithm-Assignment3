@@ -5,5 +5,4 @@
 
 # Build folders
 build/**
-CMakeLists.txt
 .vscode/
